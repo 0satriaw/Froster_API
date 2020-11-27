@@ -26,6 +26,9 @@ class AuthController extends Controller
         // $user = User::create($registrationData)->sendEmailVerificationNotification();//DENGAN EMAIL BELUMMM
         $user = User::create($registrationData);
 
+        //COBA commit di branch satria
+
+
         return response([
             'message'=>'Register Success',
             'user'=>$user,
