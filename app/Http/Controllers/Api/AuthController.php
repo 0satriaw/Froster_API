@@ -23,10 +23,12 @@ class AuthController extends Controller
             return response(['message'=>$validate->errors()],400); //return error invalid
 
         $registrationData['password'] = bcrypt($request->password); //enkripsi password
-        // $user = User::create($registrationData)->sendEmailVerificationNotification();//DENGAN EMAIL BELUMMM
-        $user = User::create($registrationData);
+        //testing
+        $user = User::create($registrationData)->sendEmailVerificationNotification();//DENGAN EMAIL BELUMMM
+        // $user = User::create($registrationData);
 
         //COBA commit di branch satria
+
 
 
         return response([
