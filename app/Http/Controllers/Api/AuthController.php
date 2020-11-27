@@ -24,13 +24,9 @@ class AuthController extends Controller
 
         $registrationData['password'] = bcrypt($request->password); //enkripsi password
         //testing
-        $user = User::create($registrationData)->sendEmailVerificationNotification();//DENGAN EMAIL BELUMMM
-        // $user = User::create($registrationData);
-
+        // $user = User::create($registrationData)->sendEmailVerificationNotification();//DENGAN EMAIL BELUMMM
+        $user = User::create($registrationData);
         //COBA commit di branch satria
-
-
-
         return response([
             'message'=>'Register Success',
             'user'=>$user,
