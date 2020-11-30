@@ -18,10 +18,13 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('register','Api\AuthController@register');
 Route::post('login','Api\AuthController@login');
-// Route::get('email/verify/{id}','VerificationController@verify')->name('verification.verify');
-// Route::get('email/resend','VerificationController@resend')->name('verification.resend');
+// Auth::routes(['verify' => true]);
+
+Route::get('email/verify/{id}', 'Api\VerificationController@verify')->name('verificationapi.verify');
+Route::get('email/resend', 'Api\VerificationController@resend')->name('verificationapi.resend');
 
 Route::group(['middleware'=>'auth:api'],function(){
+
     // CRUD USER
     Route::post('logout','Api\AuthController@logout');
 
@@ -38,5 +41,7 @@ Route::group(['middleware'=>'auth:api'],function(){
     Route::get('transaksi','Api\TransaksiController@index');
     Route::post('transaksi/{id}','Api\TransaksiController@store');
 });
+
+
 
 
