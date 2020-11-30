@@ -24,4 +24,19 @@ Route::post('login','Api\AuthController@login');
 Route::group(['middleware'=>'auth:api'],function(){
     // CRUD USER
     Route::post('logout','Api\AuthController@logout');
+
+
+    //ORDER
+    Route::get('order','Api\OrderController@index');
+    Route::get('order/{id}','Api\OrderController@show');
+    Route::post('order','Api\OrderController@store');
+    Route::put('order/{id}','Api\OrderController@update');
+    Route::delete('order/{id}','Api\OrderController@destroy');
+
+
+    //TRANSAKSI
+    Route::get('transaksi','Api\TransaksiController@index');
+    Route::post('transaksi/{id}','Api\TransaksiController@store');
 });
+
+
