@@ -29,7 +29,9 @@ Route::get('email/resend', 'Api\VerificationController@resend')->name('verificat
 Route::group(['middleware'=>'auth:api'],function(){
 
     // CRUD USER
+    Route::post('logout','Api\AuthController@logout');
 
+    //CRUD PRODUCT
     Route::get('product','Api\ProductController@index');
     Route::get('product/{id}','Api\ProductController@show');
     Route::post('product','Api\ProductController@store');
@@ -37,14 +39,12 @@ Route::group(['middleware'=>'auth:api'],function(){
     Route::delete('product/{id}','Api\ProductController@destroy');
     Route::post('product/gambar_product/{id}', 'Api\ProductController@uploadGambar');
 
+    //CRUD ONGKIR
     Route::get('ongkir','Api\OngkirController@index');
     Route::get('ongkir/{id}','Api\OngkirController@show');
     Route::post('ongkir','Api\OngkirController@store');
     Route::put('ongkir/{id}','Api\OngkirController@update');
     Route::delete('ongkir/{id}','Api\OngkirController@destroy');
-
-    Route::post('logout','Api\AuthController@logout');
-
 
     //ORDER
     Route::get('order','Api\OrderController@index');
