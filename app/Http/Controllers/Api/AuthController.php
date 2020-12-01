@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\User;
 use Validator;
+use App\Notifications\VerifyApiEmail;
 
 class AuthController extends Controller
 {
@@ -24,8 +25,9 @@ class AuthController extends Controller
 
         $registrationData['password'] = bcrypt($request->password); //enkripsi password
 
-        // $user = User::create($registrationData)->sendEmailVerificationNotification();//DENGAN EMAIL BELUMMM
-        $user = User::create($registrationData);
+        $user = User::create($registrationData)->sendApiEmailVerificationNotification();
+        // $success['message'] = 'Please confirm yourself by clicking on verify user button sent to you on your email';//DENGAN EMAIL BELUMMM
+        // $user = User::create($registrationData);
         return response([
             'message'=>'Register Success',
             'user'=>$user,
@@ -46,14 +48,19 @@ class AuthController extends Controller
             return response(['message'=>'Invalid Credentials'],401);
 
         $user = Auth::user();
-        $token = $user->createToken('Authenticaton Token')->accessToken;
-
-        return response([
-            'message'=>'Authenticated',
-            'user'=>$user,
-            'token_type'=>'Bearer',
-            'access_token'=>$token
-        ]);
+        if($user->email_verified_at!=null){
+            $token = $user->createToken('Authenticaton Token')->accessToken;
+            return response([
+                'message'=>'Authenticated',
+                'user'=>$user,
+                'token_type'=>'Bearer',
+                'access_token'=>$token
+            ]);
+        }else{
+            return response([
+                'message'=>'Please Verify Email',
+            ],401);
+        }
     }
 
     public function logout(Request $request){

@@ -7,7 +7,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
 use Carbon\Carbon;
-
+use App\Notifications\VerifyApiEmail;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -49,5 +49,10 @@ class User extends Authenticatable implements MustVerifyEmail
         if(!is_null($this->attributes['updated_at'])){
             return Carbon::parse($this->attributes['updated_at'])->format('Y-m-d H:i:s');
         }
+    }
+
+    public function sendApiEmailVerificationNotification()
+    {
+        $this->notify(new VerifyApiEmail); // my notification
     }
 }
