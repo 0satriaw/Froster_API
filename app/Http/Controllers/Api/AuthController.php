@@ -70,4 +70,109 @@ class AuthController extends Controller
             'message'=>'Succesfully logged out'
         ]);
     }
+
+    public function show($id){
+        $user = User::find($id);
+
+        if(!is_null($user)){
+            return response([
+                'message'=>'Retrieve User Success',
+                'data'=>$user
+            ],200);
+        }
+
+        return response([
+            'message'=>'User Not Found',
+            'data'=>null
+        ],404);
+    }
+
+    public function update(Request $request, $id){
+        $user = User::find($id);
+
+        if(is_null($user)){
+            return response([
+                'message'=>'User Not Found',
+                'data'=>null
+            ],404);
+        }
+
+        $updateData = $request->all();
+        //validate update blm
+        $validate = Validator::make($updateData,[
+            'name'=>'required|max:60',
+            'email'=>'required|email:rfc,dns|unique:users',
+            'no_tlp'=>'required|numeric|digits_between:10,13|starts_with:08',
+            'alamat'=>'required'
+        ]);
+
+        if($validate->fails())
+            return response(['message'=>$validate->errors()],404);//return error invalid input
+
+        $user->name = $updateData['name'];
+        $user->email = $updateData['email'];
+        $user->no_tlp = $updateData['no_tlp'];
+        $user->alamat = $updateData['alamat'];
+
+        if($user->save()){
+            return response([
+                'message'=>'Update User Success',
+                'data'=>$user,
+            ],200);
+        }//return product yg telah diedit
+
+        return response([
+            'message'=>'Update User Failed',
+            'data'=>null,
+        ],404);//return message saat product gagal diedit
+    }
+
+    public function updatePassword(Request $request,$id){
+        $user = User::find($id);
+
+        if(is_null($user)){
+            return response([
+                'message'=>'User Not Found',
+                'data'=>null
+            ],404);
+        }
+
+        $updateData = $request->all();
+        $validate = Validator::make($updateData,[
+            'password'=>'required',
+            'newPassword'=>'required',
+            'confirmPassword'=>'required'
+        ]);
+
+        if($validate->fails()){
+            return response(['message'=>$validate->errors()],404);//return error invalid input
+        }else{
+                if((Hash::check(request('password'), Auth::user()->password))==false){
+                    return response([
+                        'message'=>'Please check your old password ',
+                        'data'=>null,
+                    ],404);//return message saat user gagal diedit
+                }else if($updateData['newPassword'] != $updateData['confirmPassword']){
+                    return response([
+                        'message'=>'new password doesnt match',
+                        'data'=>null,
+                    ],404);//return message saat user gagal diedit
+                }else{
+                    $user->password = bcrypt($updateData['newPassword']);
+                }
+        }
+
+        if($user->save()){
+            return response([
+                'message'=>'Update User Success',
+                'data'=>$user,
+            ],200);
+        }//return user yg telah diedit
+
+        return response([
+            'message'=>'Update User Failed',
+            'data'=>null,
+        ],404);//return message saat user gagal diedit
+    }
+
 }
