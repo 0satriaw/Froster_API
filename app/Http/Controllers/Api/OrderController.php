@@ -102,7 +102,7 @@ class OrderController extends Controller
 
     //DELETE DENGAN Id_product
     public function destroy($id){
-        $order = Order::find($id);
+        $orders = Order::where('id_product', $id)->first();
 
         if(is_null($orders)){
             return response([
