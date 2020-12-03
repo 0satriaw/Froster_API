@@ -4,6 +4,9 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Order;
+use Validator;
+use DB;
 
 class OrderController extends Controller
 {
@@ -41,17 +44,50 @@ class OrderController extends Controller
         ],404);
     }
 
+    // Show Order User tertentu//
+    public function showOrder($id_user){
+        $orders = DB::table('orders')->where('id_user',$id_user)->get();
+
+        if(!is_null($orders)){
+            return response([
+                'message'=>'Retrieve Order Success',
+                'data'=>$orders
+            ],200);
+        }
+
+        return response([
+            'message'=>'Order Not Found',
+            'data'=>null
+        ],404);
+    }
+
     //Create Order baru cek
     public function store(Request $request){
         $storeData =$request->all();
+        $id_user = $storeData['id_user'];
+        $id_product = $storeData['id_product'];
+        // return $storeData;
+
+        $orders = Order::where([
+            ['id_user', $id_user],
+            ['id_product', $id_product]
+        ])->first();
+
+        // return $orders;
+
+        if($orders!=null){
+            return $this->update($request,$id_user);
+        }
+
         $validate = Validator::make($storeData,[
             'nama_product'=>'required',
             'harga_product'=>'required',
             'quantity'=>'required',
-            'total'=>'required',
             'id_product'=>'required',
             'id_user'=>'required'
         ]);
+
+        $storeData['total'] = $storeData['harga_product']*$storeData['quantity'];
 
         if($validate->fails()){
             return response(['message'=>$validate->errors()],400);
@@ -65,15 +101,15 @@ class OrderController extends Controller
     }
 
     //DELETE DENGAN Id_product
-    public function destroy($id_product){
-        $orders = Order::find($id_product);
+    public function destroy($id){
+        $orders = Order::where('id_product', $id)->first();
 
         if(is_null($orders)){
             return response([
                 'message'=>'Order Not Found',
                 'data'=>null
             ],404);
-        }//return message saat data product tidak ditemukan
+        }//return message saat data order tidak ditemukan
 
         if($orders->delete()){
             return response([
@@ -85,12 +121,20 @@ class OrderController extends Controller
         return response([
             'message'=>'Delete Order Failed',
             'data'=>null
-        ],400);//return message saat gagal menghapus data product
+        ],400);//return message saat gagal menghapus data order
     }
 
     //UPDATE SESUAI PRODUK BELUM sesuai
-    public function update(Request $request, $id_product){
-        $orders = Order::find($id_product);
+    public function update(Request $request, $id){
+        $storeData =$request->all();
+        $id_user = $storeData['id_user'];
+        $id_product = $storeData['id_product'];
+        // return $storeData;
+
+        $orders = Order::where([
+            ['id_user', $id_user],
+            ['id_product', $id_product]
+        ])->first();
 
         if(is_null($orders)){
             return response([
@@ -99,13 +143,12 @@ class OrderController extends Controller
             ],404);
         }
 
-        $updateData = $request->all();
         //validate update blm
-        $validate = Validator::make($updateData,[
+        $validate = Validator::make($storeData,[
             'nama_product'=>'required',
             'harga_product'=>'required',
             'quantity'=>'required',
-            'total'=>'required',
+            // 'total'=>'required',
             'id_product'=>'required',
             'id_user'=>'required'
         ]);
@@ -113,21 +156,75 @@ class OrderController extends Controller
         if($validate->fails())
             return response(['message'=>$validate->errors()],404);//return error invalid input
 
-        $orders->nama_product = $updateData['nama_product'];
-        $orders->harga_product = $updateData['harga_product'];
-        $orders->quantity = $updateData['quantity'];
-        $orders->total = $updateData['total'];
+        $qty = $orders['quantity'] + $storeData['quantity'];
+        $totalHarga = $qty * $orders['harga_product'];
+
+        $orders['nama_product'] = $storeData['nama_product'];
+        $orders['harga_product'] = $storeData['harga_product'];
+        $orders['quantity'] = $qty;
+        $orders['total'] = $totalHarga;
+
 
         if($orders->save()){
             return response([
                 'message'=>'Update Order Success',
                 'data'=>$orders,
             ],200);
-        }//return product yg telah diedit
-
+        }//return order yg telah diedit
+        // $orders = Order::updateOrCreate($storeData);
         return response([
-            'message'=>'Update Order Failed',
-            'data'=>null,
-        ],404);//return message saat product gagal diedit
+            'message'=>'Update success ',
+            'data'=>$orders,
+        ],404);//return message saat order gagal diedit
+    }
+
+    //update yg cart id disini adalah id order
+    //ini mau buat fungsi update khusus untuk cart tapi ga work aneh
+    public function updateCart(Request $request, $id){
+        $orders = Order::find($id);
+
+        // return $orders;
+        if(is_null($orders)){
+            return response([
+                'message'=>'Order Not Found',
+                'data'=>null
+            ],404);
+        }
+
+        // return $storeData;
+        $storeData = $request->all();
+        //validate update blm
+        $validate = Validator::make($storeData,[
+            'nama_product'=>'required',
+            'harga_product'=>'required',
+            'quantity'=>'required',
+            // 'total'=>'required',
+            'id_product'=>'required',
+            'id_user'=>'required'
+        ]);
+
+        if($validate->fails())
+            return response(['message'=>$validate->errors()],400);//return error invalid input
+
+        $qty = $orders['quantity'] + $storeData['quantity'];
+        $totalHarga = $qty * $orders['harga_product'];
+
+        $orders['nama_product'] = $storeData['nama_product'];
+        $orders['harga_product'] = $storeData['harga_product'];
+        $orders['quantity'] = $qty;
+        $orders['total'] = $totalHarga;
+
+
+        if($orders->save()){
+            return response([
+                'message'=>'Update Order Success',
+                'data'=>$orders,
+            ],200);
+        }//return order yg telah diedit
+        // $orders = Order::updateOrCreate($storeData);
+        return response([
+            'message'=>'Update success ',
+            'data'=>$orders,
+        ],404);//return message saat order gagal diedit
     }
 }
