@@ -179,20 +179,20 @@ class OrderController extends Controller
     }
 
     //update yg cart id disini adalah id order
-    //ini mau buat fungsi update khusus untuk cart
+    //ini mau buat fungsi update khusus untuk cart tapi ga work aneh
     public function updateCart(Request $request, $id){
         $orders = Order::find($id);
 
-        return $request;
+        // return $orders;
         if(is_null($orders)){
             return response([
                 'message'=>'Order Not Found',
                 'data'=>null
             ],404);
         }
-        $storeData = $request->all();
-        // return $storeData;
 
+        // return $storeData;
+        $storeData = $request->all();
         //validate update blm
         $validate = Validator::make($storeData,[
             'nama_product'=>'required',
@@ -204,7 +204,7 @@ class OrderController extends Controller
         ]);
 
         if($validate->fails())
-            return response(['message'=>$validate->errors()],404);//return error invalid input
+            return response(['message'=>$validate->errors()],400);//return error invalid input
 
         $qty = $orders['quantity'] + $storeData['quantity'];
         $totalHarga = $qty * $orders['harga_product'];
@@ -227,6 +227,4 @@ class OrderController extends Controller
             'data'=>$orders,
         ],404);//return message saat order gagal diedit
     }
-
-
 }
