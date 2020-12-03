@@ -4,6 +4,9 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Order;
+use Validator;
+use DB;
 
 class TransaksiController extends Controller
 {
@@ -26,25 +29,74 @@ class TransaksiController extends Controller
 
     //Create Transaksi baru cek
     public function store(Request $request, $id_user){
-        //find Order dengan id user setelah itu baru bisa di store
+        //find Transaksi dengan id user setelah itu baru bisa di store
         ///blmmmmmmm
-        $storeData =$request->all();
-        $validate = Validator::make($storeData,[
+        $storeData =$request->get('myArray');
+        if($storeData){
+            foreach($storeData as $transaksi) {
+                $orders =  DB::table('orders')->where('id_user',$transaksi->id_product)->get();
+                if($orders){
+                    return $this->update($transaksi, $transaksi->id);
+                }else{
+                    Transaksi::create([
+                        'nama_product' => $transaksi['nama_product'],
+                        'sold_items' => $transaksi['sold_items'],
+                        'total' => $transaksi['total'],
+                        'id_product' => $transaksi['id_product']
+
+                    ]);
+                    if($validate->fails()){
+                        return response(['message'=>$validate->errors()],400);
+                    }
+                    return response([
+                        'message'=>'Add Transaksi Success',
+                        'data'=>$transaksis,
+                    ],200);
+                }
+            }
+
+        }
+    }
+
+    public function update(Request $request, $id){
+        $transaksi = Transaksi::find($id);
+
+        if(is_null($transaksi)){
+            return response([
+                'message'=>'Transaksi Not Found',
+                'data'=>null
+            ],404);
+        }
+
+        $updateData = $request->all();
+        //validate update blm
+        $validate = Validator::make($updateData,[
             'nama_product'=>'required',
             'sold_items'=>'required',
             'total'=>'required',
             'id_product'=>'required'
         ]);
 
-        if($validate->fails()){
-            return response(['message'=>$validate->errors()],400);
-        }
+        if($validate->fails())
+            return response(['message'=>$validate->errors()],404);//return error invalid input
 
-        $transaksis = Transaksi::create($storeData);
+        $transaksi->nama_product = $updateData['nama_product'];
+        $transaksi->sold_items = $updateData['sold_items'];
+        $qty = $transaksi->sold_items+$updateData['quantity'];
+        //update stok
+        $transaksi->total = $updateData['total']+$transaksi->total;
+
+        if($transaksi->save()){
+            return response([
+                'message'=>'Update Transaksi Success',
+                'data'=>$transaksi,
+            ],200);
+        }//return product yg telah diedit
+
         return response([
-            'message'=>'Add Transaksi Success',
-            'data'=>$transaksis,
-        ],200);
+            'message'=>'Update Transaksi Failed',
+            'data'=>null,
+        ],404);//return message saat product gagal diedit
     }
 
 }

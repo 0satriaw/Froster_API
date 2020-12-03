@@ -119,12 +119,12 @@ class AuthController extends Controller
                 'message'=>'Update User Success',
                 'data'=>$user,
             ],200);
-        }//return product yg telah diedit
+        }//return user yg telah diedit
 
         return response([
             'message'=>'Update User Failed',
             'data'=>null,
-        ],404);//return message saat product gagal diedit
+        ],404);//return message saat user gagal diedit
     }
 
     public function updatePassword(Request $request,$id){
@@ -173,6 +173,75 @@ class AuthController extends Controller
             'message'=>'Update User Failed',
             'data'=>null,
         ],404);//return message saat user gagal diedit
+    }
+
+    public function uploadProfile(Request $request, $id){
+        $user = User::find($id);
+        if(is_null($user)){
+            return response([
+                'message' => 'User not found',
+                'data' => null
+            ],404);
+        }
+
+        if(!$request->hasFile('image')) {
+            return response([
+                'message' => 'Upload Photo User Failed',
+                'data' => null,
+            ],400);
+        }
+        $file = $request->file('image');
+
+        if(!$file->isValid()) {
+            return response([
+                'message'=> 'Upload Photo User Failed',
+                'data'=> null,
+            ],400);
+        }
+
+        $image = public_path().'/profile/';
+        $file -> move($image, $file->getClientOriginalName());
+        $image = '/profile/';
+        $image = $image.$file->getClientOriginalName();
+        $updateData = $request->all();
+        Validator::make($updateData, [
+            'gambar_product' => $image
+        ]);
+        $user->gambar_product = $image;
+        if($user->save()){
+            return response([
+                'message' => 'Upload Photo User Success',
+                'path' => $image,
+            ],200);
+        }
+
+        return response([
+            'messsage'=>'Upload Photo User Failed',
+            'data'=>null,
+        ],400);
+    }
+
+    public function destroy($id){
+        $user = User::find($id);
+
+        if(is_null($user)){
+            return response([
+                'message'=>'User Not Found',
+                'data'=>null
+            ],404);
+        }//return message saat data user tidak ditemukan
+
+        if($user->delete()){
+            return response([
+                'message'=>'Delete User Success',
+                'data'=>$user,
+            ],200);
+        }//return message saat berhasil menghapus data
+
+        return response([
+            'message'=>'Delete User Failed',
+            'data'=>null
+        ],400);//return message saat gagal menghapus data user
     }
 
 }

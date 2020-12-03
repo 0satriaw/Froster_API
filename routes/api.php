@@ -27,19 +27,25 @@ Route::group(['middleware'=>'auth:api'],function(){
 
     // CRUD USER
     Route::post('logout','Api\AuthController@logout');
-
+    Route::put('user/{id}','Api\AuthController@update');
+    Route::put('changeprofile/{id}','Api\AuthController@updateProfile');
+    Route::put('changepassword/{id}','Api\AuthController@updatePassword');
+    Route::get('user/{id}','Api\AuthController@show');
+    Route::delete('user/{id}','Api\AuthController@destroy');
 
     //ORDER
     Route::get('order','Api\OrderController@index');
     Route::get('order/{id}','Api\OrderController@show');
     Route::post('order','Api\OrderController@store');
     Route::put('order/{id}','Api\OrderController@update');
+    Route::put('updatecart/{id}','Api\OrderController@updateCart');
     Route::delete('order/{id}','Api\OrderController@destroy');
-
+    Route::get('orderuser/{id_user}','Api\OrderController@showOrder');
 
     //TRANSAKSI
     Route::get('transaksi','Api\TransaksiController@index');
     Route::post('transaksi/{id}','Api\TransaksiController@store');
+    Route::put('transaksi/{id}','Api\TransaksiController@update');
 });
 
 
