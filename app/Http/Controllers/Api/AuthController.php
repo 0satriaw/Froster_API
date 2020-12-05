@@ -34,6 +34,22 @@ class AuthController extends Controller
         ],200);
     }
 
+    public function index(){
+        $user = User::all();
+
+        if(count($user)>0){
+                return response([
+                'message' =>'Retrieve All Success',
+                'data' =>$user
+                ],200);
+            }
+
+        return response([
+            'message' => 'Empty',
+            'data' =>null
+            ],404);
+    }
+
     public function login(Request $request){
         $loginData = $request->all();
         $validate = Validator::make($loginData,[
@@ -101,7 +117,6 @@ class AuthController extends Controller
         //validate update blm
         $validate = Validator::make($updateData,[
             'name'=>'required|max:60',
-            'email'=>'required|email:rfc,dns|unique:users',
             'no_tlp'=>'required|numeric|digits_between:10,13|starts_with:08',
             'alamat'=>'required'
         ]);

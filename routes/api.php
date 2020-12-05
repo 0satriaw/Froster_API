@@ -30,6 +30,7 @@ Route::group(['middleware'=>'auth:api'],function(){
 
     // CRUD USER
     Route::post('logout','Api\AuthController@logout');
+    Route::get('user','Api\AuthController@index');
     Route::put('user/{id}','Api\AuthController@update');
     Route::put('changeprofile/{id}','Api\AuthController@updateProfile');
     Route::put('changepassword/{id}','Api\AuthController@updatePassword');
