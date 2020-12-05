@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Order;
 use Validator;
+use App\Product;
 use DB;
 
 class OrderController extends Controller
@@ -67,6 +68,16 @@ class OrderController extends Controller
         $id_user = $storeData['id_user'];
         $id_product = $storeData['id_product'];
         // return $storeData;
+
+        //-------------------------------------------Belum dicoba---------------------------------------------------------//
+        $product = Product::where('id', $id_product)->first();
+        if($product['stok_product']<$storeData['quantity']){
+            return response([
+                'message'=>'Stock Product tidak cukup',
+                'data'=>null,
+            ],200);
+        }
+        //-------------------------------------------Belum dicoba---------------------------------------------------------//
 
         $orders = Order::where([
             ['id_user', $id_user],
@@ -131,6 +142,16 @@ class OrderController extends Controller
         $id_product = $storeData['id_product'];
         // return $storeData;
 
+        //-------------------------------------------Belum dicoba---------------------------------------------------------//
+        $product = Product::where('id', $id_product)->first();
+        if($product['stok_product']<$storeData['quantity']){
+            return response([
+                'message'=>'Stock Product tidak cukup',
+                'data'=>null,
+            ],200);
+        }
+        //-------------------------------------------Belum dicoba---------------------------------------------------------//
+
         $orders = Order::where([
             ['id_user', $id_user],
             ['id_product', $id_product]
@@ -193,6 +214,17 @@ class OrderController extends Controller
 
         // return $storeData;
         $storeData = $request->all();
+
+          //-------------------------------------------Belum dicoba---------------------------------------------------------//
+          $product = Product::where('id', $id_product)->first();
+          if($product['stok_product']<$storeData['quantity']){
+              return response([
+                  'message'=>'Stock Product tidak cukup',
+                  'data'=>null,
+              ],200);
+          }
+          //-------------------------------------------Belum dicoba---------------------------------------------------------//
+
         //validate update blm
         $validate = Validator::make($storeData,[
             'nama_product'=>'required',
