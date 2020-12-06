@@ -24,14 +24,14 @@ class ProductController extends Controller
             'message' => 'Empty',
             'data' =>null
             ],404);
-        
-        
+
+
     }
 
     public function show ($id){
         $product=Product::find($id);
 
-        
+
         if(!is_null($product)){
             return response([
                 'message'  => 'Retrieve Product Success',
@@ -58,13 +58,28 @@ class ProductController extends Controller
         if($validate->fails())
             return response(['message'=> $validate->errors()],400);
 
-        $product = Product::create($storeData);
+            //tambahan image biar bisa langsung pas add
+        if($files = $request->file('gambar_product')){
+        $imageName = $files->getClientOriginalName();
+        $request->gambar_product->move(public_path('images'),$imageName);
+        $product = Product::create([
+            'nama_product'=>$request->nama_product,
+            'deskripsi_product'=>$request->deskripsi_product,
+            'harga_product'=>$request->harga_product,
+            'stok_product'=>$request->stok_product,
+            'gambar_product'=>'/images/'.$imageName,
+        ]);
         return response([
-            'message' => 'Add Product Success',
-            'data' => $product,
+            'message'=>'Add Product Success',
+            'data'=>$product
         ],200);
-   
+        }
 
+        // $product = Product::create($storeData);
+        // return response([
+        //     'message' => 'Add Product Success',
+        //     'data' => $product,
+        // ],200);
 
     }
 
@@ -88,7 +103,7 @@ class ProductController extends Controller
                 'message' => 'Delete Product Failed',
                 'data' => null,
             ],400);
-        
+
     }
 
     public function update(Request $request, $id){
@@ -110,7 +125,7 @@ class ProductController extends Controller
 
         if($validate->fails())
             return response(['message'=> $validate->errors()],400);
-            
+
 
             $product->nama_product =  $updateData['nama_product'];
             $product->deskripsi_product = $updateData['deskripsi_product'];
@@ -146,18 +161,19 @@ class ProductController extends Controller
             ],400);
         }
         $file = $request->file('gambar_product');
-        
+
         if(!$file->isValid()) {
             return response([
                 'message'=> 'Upload Photo Product Failed',
                 'data'=> null,
             ],400);
         }
+        // $imageName = $files->getClientOriginalName();
+        // $request->gambar_product->move(public_path('images'),$imageName);
 
         $image = public_path().'/images/';
         $file -> move($image, $file->getClientOriginalName());
-        $image = '/images/';
-        $image = $image.$file->getClientOriginalName();
+        $image = '/images/'.$file->getClientOriginalName();
         $updateData = $request->all();
         Validator::make($updateData, [
             'gambar_product' => $image
@@ -171,11 +187,11 @@ class ProductController extends Controller
                 'path' => $image,
             ],200);
         }
-        
+
         return response([
             'messsage'=>'Upload Photo Product Failed',
             'data'=>null,
         ],400);
-        
+
     }
 }

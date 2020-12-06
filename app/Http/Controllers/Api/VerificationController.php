@@ -16,7 +16,9 @@ class VerificationController extends Controller
         $date = Carbon::now();
         $user->email_verified_at = $date; // to enable the “email_verified_at field of that user be a current time stamp by mimicing the must verify email feature
         $user->save();
-        return response()->json('Email Verified');
+        // return response()->json('Email Verified');
+        //redirect ke link hostingan nantinya
+        return redirect()->to('http://localhost:8081/verified');
     }
 
     public function resend(Request $request)

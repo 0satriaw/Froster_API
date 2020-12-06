@@ -32,7 +32,7 @@ Route::group(['middleware'=>'auth:api'],function(){
     Route::post('logout','Api\AuthController@logout');
     Route::get('user','Api\AuthController@index');
     Route::put('user/{id}','Api\AuthController@update');
-    Route::put('changeprofile/{id}','Api\AuthController@updateProfile');
+    Route::post('changeprofile/{id}','Api\AuthController@uploadProfile');
     Route::put('changepassword/{id}','Api\AuthController@updatePassword');
     Route::get('user/{id}','Api\AuthController@show');
     Route::delete('user/{id}','Api\AuthController@destroy');

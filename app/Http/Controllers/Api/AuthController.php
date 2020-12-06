@@ -220,9 +220,9 @@ class AuthController extends Controller
         $image = $image.$file->getClientOriginalName();
         $updateData = $request->all();
         Validator::make($updateData, [
-            'gambar_product' => $image
+            'image' => $image
         ]);
-        $user->gambar_product = $image;
+        $user->image = $image;
         if($user->save()){
             return response([
                 'message' => 'Upload Photo User Success',
