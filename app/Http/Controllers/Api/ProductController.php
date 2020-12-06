@@ -53,17 +53,36 @@ class ProductController extends Controller
             'deskripsi_product' => 'required|max:255',
             'harga_product' => 'required|numeric',
             'stok_product' => 'required|numeric'
+            
         ]);
-
         if($validate->fails())
             return response(['message'=> $validate->errors()],400);
 
         $product = Product::create($storeData);
-        return response([
-            'message' => 'Add Product Success',
-            'data' => $product,
-        ],200);
-   
+
+        if(!$request->hasFile('gambar_product')) {
+            return response([
+                'message' => 'Upload Photo Product Failed',
+                'data' => null,
+            ],400);
+        }
+        $file = $request->file('gambar_product');
+
+        $image = public_path().'/images/';
+        $file -> move($image, $file->getClientOriginalName());
+        $image = '/images/';
+        $image = $image.$file->getClientOriginalName();
+        $updateData = $request->all();
+      
+        $product->gambar_product = $image;
+
+
+        if($product->save()){
+            return response([
+                'message' => 'Add Product Success',
+                'path' => $image,
+            ],200);
+        }
 
 
     }
@@ -102,7 +121,7 @@ class ProductController extends Controller
 
         $updateData = $request->all();
         $validate = Validator::make($updateData,[
-            'nama_product'=>['max:60',Rule::unique('product')->ignore($product)],
+            'nama_product'=>'max:60',
             'deskripsi_product' => 'max:255',
             'harga_product' =>'numeric',
             'stok_product'=>'numeric'
@@ -131,6 +150,7 @@ class ProductController extends Controller
     }
 
     public function uploadGambar(Request $request, $id){
+        
         $product= Product::find($id);
         if(is_null($product)){
             return response([
@@ -159,9 +179,7 @@ class ProductController extends Controller
         $image = '/images/';
         $image = $image.$file->getClientOriginalName();
         $updateData = $request->all();
-        Validator::make($updateData, [
-            'gambar_product' => $image
-        ]);
+      
         $product->gambar_product = $image;
 
 
