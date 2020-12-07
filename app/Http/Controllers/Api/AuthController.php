@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\User;
 use Validator;
+use Illuminate\Support\Facades\Hash;
 use App\Notifications\VerifyApiEmail;
 
 class AuthController extends Controller

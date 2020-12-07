@@ -77,6 +77,7 @@ class OrderController extends Controller
                 'data'=>null,
             ],200);
         }
+
         //-------------------------------------------Belum dicoba---------------------------------------------------------//
 
         $orders = Order::where([
@@ -97,7 +98,8 @@ class OrderController extends Controller
             'id_product'=>'required',
             'id_user'=>'required'
         ]);
-
+        $product['stok_product'] = $product['stok_product'] - $storeData['quantity'];
+        $product->save();
         $storeData['total'] = $storeData['harga_product']*$storeData['quantity'];
 
         if($validate->fails()){
@@ -105,6 +107,7 @@ class OrderController extends Controller
         }
 
         $orders = Order::create($storeData);
+
         return response([
             'message'=>'Add Order Success',
             'data'=>$orders,
@@ -113,14 +116,21 @@ class OrderController extends Controller
 
     //DELETE DENGAN Id_product
     public function destroy($id){
-        $orders = Order::where('id_product', $id)->first();
-
+        $orders = Order::where('id', $id)->first();
+        // return $orders;
+        $id_product = $orders['id_product'];
+        $product = Product::where('id', $id_product)->first();
         if(is_null($orders)){
             return response([
                 'message'=>'Order Not Found',
                 'data'=>null
             ],404);
-        }//return message saat data order tidak ditemukan
+        }else{
+            $product['stok_product'] = $product['stok_product'] + $orders['quantity'];
+            $product->save();
+        }
+
+        //return message saat data order tidak ditemukan
 
         if($orders->delete()){
             return response([
@@ -149,6 +159,9 @@ class OrderController extends Controller
                 'message'=>'Stock Product tidak cukup',
                 'data'=>null,
             ],200);
+        }else{
+            $product['stok_product'] = $product['stok_product'] - $storeData['quantity'];
+            $product->save();
         }
         //-------------------------------------------Belum dicoba---------------------------------------------------------//
 
