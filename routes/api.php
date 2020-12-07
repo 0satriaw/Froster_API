@@ -54,6 +54,8 @@ Route::group(['middleware'=>'auth:api'],function(){
     Route::post('ongkir','Api\OngkirController@store');
     Route::put('ongkir/{id}','Api\OngkirController@update');
     Route::delete('ongkir/{id}','Api\OngkirController@destroy');
+    Route::get('showregion','Api\OngkirController@showRegion');
+    Route::get('showdistrict/{region}','Api\OngkirController@showDistrict');
 
     //ORDER
     Route::get('order','Api\OrderController@index');
