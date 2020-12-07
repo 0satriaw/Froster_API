@@ -24,6 +24,9 @@ Route::get('email/verify/{id}', 'Api\VerificationController@verify')->name('veri
 Route::get('email/resend', 'Api\VerificationController@resend')->name('verificationapi.resend');
 
 
+//Product
+Route::get('product','Api\ProductController@index');
+Route::get('product/{id}','Api\ProductController@show');
 
 
 Route::group(['middleware'=>'auth:api'],function(){
@@ -38,8 +41,8 @@ Route::group(['middleware'=>'auth:api'],function(){
     Route::delete('user/{id}','Api\AuthController@destroy');
 
     //CRUD PRODUCT
-    Route::get('product','Api\ProductController@index');
-    Route::get('product/{id}','Api\ProductController@show');
+
+
     Route::post('product','Api\ProductController@store');
     Route::put('product/{id}','Api\ProductController@update');
     Route::delete('product/{id}','Api\ProductController@destroy');
