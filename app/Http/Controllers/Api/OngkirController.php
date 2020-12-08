@@ -47,7 +47,7 @@ class OngkirController extends Controller
     }
 
     public function showDistrict($region){
-        $ongkir = DB::table('ongkir')->select('sub_district')->where('region',$region)->get();
+        $ongkir = DB::table('ongkir')->select('sub_district','harga_ongkir')->where('region',$region)->get();
         return $ongkir;
         if(count($ongkir)>0){
                 return response([
