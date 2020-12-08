@@ -61,12 +61,12 @@ class TransaksiController extends Controller
             }
             return response([
                 'message'=>'Add Transaksi Success',
-                'data'=>$order,
+                // 'data'=>$order,
             ],200);
         }
         return response([
             'message'=>'Add Transaksi Failed',
-            'data'=>null,
+            // 'data'=>null,
         ],200);
     }
 
