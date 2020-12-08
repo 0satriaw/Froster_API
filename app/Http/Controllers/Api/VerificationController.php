@@ -18,7 +18,7 @@ class VerificationController extends Controller
         $user->save();
         // return response()->json('Email Verified');
         //redirect ke link hostingan nantinya
-        return redirect()->to('http://localhost:8081/verified');
+        return redirect()->to('https://froster.tugasbesar.com/verified');
     }
 
     public function resend(Request $request)
